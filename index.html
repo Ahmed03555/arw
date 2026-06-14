@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Dancing+Script:wght@700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0015;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  canvas#stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .glitter-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(56px, 12vw, 100px);
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff9de2, #ffcd3c, #ff9de2, #b388ff, #ffcd3c);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease-in-out infinite;
+    text-align: center;
+    line-height: 1.1;
+    filter: drop-shadow(0 0 30px rgba(255, 157, 226, 0.5));
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .subtitle {
+    font-size: clamp(18px, 4vw, 28px);
+    color: #ffcd3c;
+    text-align: center;
+    margin-top: 10px;
+    letter-spacing: 2px;
+    animation: glow 2s ease-in-out infinite alternate;
+    font-weight: 700;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 10px #ffcd3c, 0 0 20px #ffcd3c; }
+    to { text-shadow: 0 0 20px #ffcd3c, 0 0 40px #ff9de2, 0 0 60px #ffcd3c; }
+  }
+
+  .cake-container {
+    margin: 40px 0;
+    position: relative;
+  }
+
+  .cake-svg {
+    filter: drop-shadow(0 0 40px rgba(255, 100, 200, 0.4));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+  }
+
+  .date-badge {
+    background: linear-gradient(135deg, rgba(255, 157, 226, 0.15), rgba(179, 136, 255, 0.15));
+    border: 1px solid rgba(255, 157, 226, 0.4);
+    border-radius: 50px;
+    padding: 14px 36px;
+    color: #fff;
+    font-size: clamp(16px, 3vw, 22px);
+    font-weight: 700;
+    text-align: center;
+    margin: 10px 0 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(255, 157, 226, 0.2), inset 0 0 20px rgba(255, 157, 226, 0.05);
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%, 100% { border-color: rgba(255, 157, 226, 0.4); box-shadow: 0 0 20px rgba(255, 157, 226, 0.2); }
+    50% { border-color: rgba(255, 205, 60, 0.7); box-shadow: 0 0 40px rgba(255, 205, 60, 0.3); }
+  }
+
+  .message-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 157, 226, 0.2);
+    border-radius: 24px;
+    padding: 30px 40px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    color: #f0d0ff;
+    font-size: clamp(15px, 2.5vw, 19px);
+    line-height: 2;
+    font-weight: 400;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    margin-bottom: 30px;
+    direction: rtl;
+  }
+
+  .message-card strong {
+    color: #ffcd3c;
+    font-weight: 900;
+  }
+
+  .balloon-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin: 10px 0;
+  }
+
+  .balloon {
+    animation: bob 1.8s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+
+  .balloon:nth-child(2) { animation-delay: 0.3s; }
+  .balloon:nth-child(3) { animation-delay: 0.6s; }
+  .balloon:nth-child(4) { animation-delay: 0.9s; }
+  .balloon:nth-child(5) { animation-delay: 1.2s; }
+
+  @keyframes bob {
+    0%, 100% { transform: rotate(-6deg) translateY(0); }
+    50% { transform: rotate(6deg) translateY(-12px); }
+  }
+
+  .confetti-wrap {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -20px;
+    animation: fall linear infinite;
+    border-radius: 2px;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  .sparkle {
+    position: absolute;
+    pointer-events: none;
+    animation: sparkle-anim ease-out forwards;
+    z-index: 3;
+    font-size: 20px;
+  }
+
+  @keyframes sparkle-anim {
+    0% { transform: scale(0) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+    100% { transform: scale(0) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="confetti-wrap" id="confetti"></div>
+
+<div class="page">
+
+  <div class="balloon-row">
+    <svg class="balloon" width="44" height="64" viewBox="0 0 44 64">
+      <ellipse cx="22" cy="26" rx="18" ry="22" fill="#ff6eb4"/>
+      <path d="M22 48 Q18 54 22 60 Q26 54 22 48" stroke="#ff6eb4" stroke-width="1.5" fill="none"/>
+    </svg>
+    <svg class="balloon" width="44" height="64" viewBox="0 0 44 64">
+      <ellipse cx="22" cy="26" rx="18" ry="22" fill="#ffcd3c"/>
+      <path d="M22 48 Q18 54 22 60 Q26 54 22 48" stroke="#ffcd3c" stroke-width="1.5" fill="none"/>
+    </svg>
+    <svg class="balloon" width="44" height="64" viewBox="0 0 44 64">
+      <ellipse cx="22" cy="26" rx="18" ry="22" fill="#b388ff"/>
+      <path d="M22 48 Q18 54 22 60 Q26 54 22 48" stroke="#b388ff" stroke-width="1.5" fill="none"/>
+    </svg>
+    <svg class="balloon" width="44" height="64" viewBox="0 0 44 64">
+      <ellipse cx="22" cy="26" rx="18" ry="22" fill="#ff9de2"/>
+      <path d="M22 48 Q18 54 22 60 Q26 54 22 48" stroke="#ff9de2" stroke-width="1.5" fill="none"/>
+    </svg>
+    <svg class="balloon" width="44" height="64" viewBox="0 0 44 64">
+      <ellipse cx="22" cy="26" rx="18" ry="22" fill="#7affd4"/>
+      <path d="M22 48 Q18 54 22 60 Q26 54 22 48" stroke="#7affd4" stroke-width="1.5" fill="none"/>
+    </svg>
+  </div>
+
+  <div class="glitter-text">أروى</div>
+  <div class="subtitle">✨ عيد ميلاد سعيد ✨</div>
+
+  <div class="date-badge">🎂 18 يونيو 🎂</div>
+
+  <div class="cake-container">
+    <svg class="cake-svg" width="220" height="200" viewBox="0 0 220 200">
+      <!-- plate -->
+      <ellipse cx="110" cy="178" rx="80" ry="12" fill="#2a0040" opacity="0.5"/>
+      <!-- cake bottom layer -->
+      <rect x="30" y="120" width="160" height="60" rx="12" fill="#ff6eb4"/>
+      <rect x="30" y="120" width="160" height="18" rx="0" fill="#ff9de2" opacity="0.5"/>
+      <!-- stripes bottom -->
+      <rect x="55" y="120" width="12" height="60" rx="0" fill="#fff" opacity="0.08"/>
+      <rect x="95" y="120" width="12" height="60" rx="0" fill="#fff" opacity="0.08"/>
+      <rect x="135" y="120" width="12" height="60" rx="0" fill="#fff" opacity="0.08"/>
+      <!-- cake top layer -->
+      <rect x="55" y="72" width="110" height="52" rx="10" fill="#b388ff"/>
+      <rect x="55" y="72" width="110" height="16" rx="0" fill="#d4b8ff" opacity="0.5"/>
+      <!-- frosting drips bottom -->
+      <ellipse cx="50" cy="120" rx="12" ry="8" fill="#fff" opacity="0.9"/>
+      <ellipse cx="80" cy="123" rx="10" ry="7" fill="#fff" opacity="0.9"/>
+      <ellipse cx="110" cy="120" rx="11" ry="8" fill="#fff" opacity="0.9"/>
+      <ellipse cx="140" cy="123" rx="10" ry="7" fill="#fff" opacity="0.9"/>
+      <ellipse cx="170" cy="120" rx="12" ry="8" fill="#fff" opacity="0.9"/>
+      <!-- frosting drips top -->
+      <ellipse cx="65" cy="72" rx="8" ry="6" fill="#fff" opacity="0.9"/>
+      <ellipse cx="90" cy="74" rx="7" ry="5" fill="#fff" opacity="0.9"/>
+      <ellipse cx="115" cy="72" rx="8" ry="6" fill="#fff" opacity="0.9"/>
+      <ellipse cx="140" cy="74" rx="7" ry="5" fill="#fff" opacity="0.9"/>
+      <ellipse cx="158" cy="72" rx="8" ry="6" fill="#fff" opacity="0.9"/>
+      <!-- candles -->
+      <rect x="78" y="46" width="10" height="28" rx="4" fill="#ffcd3c"/>
+      <rect x="105" y="40" width="10" height="34" rx="4" fill="#ff9de2"/>
+      <rect x="132" y="46" width="10" height="28" rx="4" fill="#7affd4"/>
+      <!-- flames -->
+      <ellipse cx="83" cy="42" rx="6" ry="9" fill="#ffcd3c" opacity="0.9"/>
+      <ellipse cx="83" cy="40" rx="3" ry="5" fill="#fff" opacity="0.7"/>
+      <ellipse cx="110" cy="36" rx="6" ry="9" fill="#ff9de2" opacity="0.9"/>
+      <ellipse cx="110" cy="34" rx="3" ry="5" fill="#fff" opacity="0.7"/>
+      <ellipse cx="137" cy="42" rx="6" ry="9" fill="#7affd4" opacity="0.9"/>
+      <ellipse cx="137" cy="40" rx="3" ry="5" fill="#fff" opacity="0.7"/>
+      <!-- decorations -->
+      <circle cx="70" cy="148" r="5" fill="#ffcd3c"/>
+      <circle cx="110" cy="145" r="5" fill="#fff" opacity="0.8"/>
+      <circle cx="150" cy="148" r="5" fill="#b388ff"/>
+      <circle cx="90" cy="155" r="4" fill="#7affd4"/>
+      <circle cx="130" cy="155" r="4" fill="#ff9de2"/>
+    </svg>
+  </div>
+
+  <div class="message-card">
+    كل سنة وانتي طيبة يا <strong>أروى</strong> 💖<br>
+    ربنا يكرمك ويسعدك دايماً<br>
+    ويجعل أيامك كلها <strong>نور وفرحة</strong> ✨<br>
+    وتحققي كل أحلامك يا معالي الباشا 🌙
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const stars = Array.from({length: 180}, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: Math.random() * 1.8 + 0.3,
+  alpha: Math.random(),
+  speed: Math.random() * 0.02 + 0.005
+}));
+
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    s.alpha += s.speed;
+    if (s.alpha > 1 || s.alpha < 0) s.speed *= -1;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${Math.abs(Math.sin(s.alpha))})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+const confettiWrap = document.getElementById('confetti');
+const colors = ['#ff6eb4', '#ffcd3c', '#b388ff', '#7affd4', '#ff9de2', '#ffffff', '#ff6b6b'];
+
+for (let i = 0; i < 60; i++) {
+  const el = document.createElement('div');
+  el.className = 'confetti-piece';
+  el.style.left = Math.random() * 100 + 'vw';
+  el.style.background = colors[Math.floor(Math.random() * colors.length)];
+  el.style.width = (Math.random() * 8 + 6) + 'px';
+  el.style.height = (Math.random() * 8 + 6) + 'px';
+  el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+  el.style.animationDuration = (Math.random() * 4 + 4) + 's';
+  el.style.animationDelay = (Math.random() * 6) + 's';
+  confettiWrap.appendChild(el);
+}
+
+document.addEventListener('click', (e) => {
+  for (let i = 0; i < 8; i++) {
+    const spark = document.createElement('div');
+    spark.className = 'sparkle';
+    spark.textContent = ['✨','⭐','💫','🌟'][Math.floor(Math.random()*4)];
+    spark.style.left = (e.clientX + (Math.random()-0.5)*60) + 'px';
+    spark.style.top = (e.clientY + (Math.random()-0.5)*60) + 'px';
+    spark.style.animationDuration = (Math.random()*0.6+0.5) + 's';
+    document.body.appendChild(spark);
+    setTimeout(() => spark.remove(), 1200);
+  }
+});
+</script>
+
+</body>
+</html>
